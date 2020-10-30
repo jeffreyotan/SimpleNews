@@ -16,6 +16,23 @@ const app = express();
 app.engine('hbs', handlebars({ defaultLayout: 'default.hbs' }));
 app.set('view engine', 'hbs');
 
+// for implementing a simple cache
+const localCache = new Map();
+const processNewsAPIData = (articles) => {
+    let newsArticles = [];
+    articles.forEach( (element) => {
+        newsArticles.push({
+            title: element['title'],
+            urlToImage: element['urlToImage'],
+            summary: element['description'],
+            publishTime: element['publishedAt'],
+            articleLink: element['url']
+        });
+    });
+    return newsArticles;
+};
+
+// setup the different middlewares to handle to possible routes
 app.get('/', (req, res, next) => {
     res.status(200).type('text/html');
     res.render('index');
@@ -39,44 +56,65 @@ app.get('/search', async (req,res,next) => {
             category: receivedParams.category
         }
     )
-    console.info('Final url: ', url);
+    // console.info('Final url: ', url);
+
+    let hasArticles = false;
+    let newsArticles = [];
+    let newsData;
 
     const result = await fetch(url);
 
-    let newsData;
-    try {
-        newsData = await result.json();
-    } catch(e) {
-        console.error(e);
-        res.status(500).type('text/html');
-        res.send("<h1>An internal server error occurred.</h1>");
-        return Promise.reject(e);
-    }
-
-    // console.info(newsData);
-    let hasArticles = false;
-    let newsArticles = [];
-    if(newsData['status'] === 'ok' && newsData['articles'].length > 0) {
+    if(false && localCache.has(url)) {
+        console.info(`Subsequent use of ${url}`);
         hasArticles = true;
-        const articles = newsData['articles'];
-
-        articles.forEach( (element) => {
-            newsArticles.push({
-                title: element['title'],
-                urlToImage: element['urlToImage'],
-                summary: element['description'],
-                publishTime: element['publishedAt'],
-                articleLink: element['url']
-            });
+        newsArticles = processNewsAPIData(localCache.get(url));
+        newsArticles.forEach( (element) => {
+            console.info('===============');
+            console.info(`Cached data is ${JSON.stringify(element)}`);
         });
-        // console.info(newsArticles);
+    } else {
+        console.info(`First use of ${url}`);
+        try {
+            newsData = await result.json();
+        } catch(e) {
+            console.error(e);
+            res.status(500).type('text/html');
+            res.send("<h1>An internal server error occurred.</h1>");
+            return Promise.reject(e);
+        }
+    
+        // console.info(newsData);
+    
+        if(newsData['status'] === 'ok' && newsData['articles'].length > 0) {
+            hasArticles = true;
+            newsArticles = processNewsAPIData(newsData['articles']);
+            /* no need after implementing cache
+            const articles = newsData['articles'];
+    
+            articles.forEach( (element) => {
+                newsArticles.push({
+                    title: element['title'],
+                    urlToImage: element['urlToImage'],
+                    summary: element['description'],
+                    publishTime: element['publishedAt'],
+                    articleLink: element['url']
+                });
+            });
+            // console.info(newsArticles); */
+    
+            //cache the results
+            localCache.set(url, newsArticles);
+            const newsArray = localCache.get(url);
+            newsArray.forEach( (element) => {
+                console.info(`Data cached is ${JSON.stringify(element)}`);
+            });
+        }
     }
 
     res.status(200).type('text/html');
     res.render('search', { hasArticles, newsArticles });
 });
 
-// setup the different middlewares to handle to possible routes
 app.use(express.static(__dirname + '/public'));
 
 // start the express server if an API_KEY is present
