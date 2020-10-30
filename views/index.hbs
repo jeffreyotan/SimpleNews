@@ -1,0 +1,43 @@
+<form action="/search" method="GET">
+    <div class="form-group">
+        <label for="searchKey" class="localLabel">News Search</label>
+        <input type="text" class="form-control" name="searchKey" id="searchKey" placeholder="Please input search term">
+    </div>
+    <table class="table-borderless localTable">
+        <thead></thead>
+        <tbody>
+            <div class="form-group d-flex align-items-center">
+                <tr>
+                    <td><input class="" type="radio" name="country" id="us" value="us" checked></td>
+                    <td><label for="us"><img src="/flags/us.png" alt="US Flag"></label></td>
+                    <td><input type="radio" name="country" id="uk" value="uk"></td>
+                    <td><label for="uk"><img src="/flags/uk.png" alt="UK Flag"></label></td>
+                    <td><input type="radio" name="country" id="fr" value="fr"></td>
+                    <td><label for="fr"><img src="/flags/fr.png" alt="FR Flag"></label></td>
+                </tr>
+                <tr>
+                    <td><input type="radio" name="country" id="sg" value="sg"></td>
+                    <td><label for="sg"><img src="/flags/sg.png" alt="SG Flag"></label></td>
+                    <td><input type="radio" name="country" id="jp" value="jp"></td>
+                    <td><label for="jp"><img src="/flags/jp.png" alt="JP Flag"></label></td>
+                    <td><input type="radio" name="country" id="cn" value="cn"></td>
+                    <td><label for="cn"><img src="/flags/cn.png" alt="CN Flag"></label></td>
+                </tr>
+            </div>
+        </tbody>
+    </table>
+    <div class="form-group">
+        <select class="custom-select" name="category" id="category">
+            <option value="business">Business</option>
+            <option value="entertainment">Entertainmen</option>
+            <option value="general">General</option>
+            <option value="health">Health</option>
+            <option value="science">Science</option>
+            <option value="sports">Sports</option>
+            <option value="technology">Technology</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn-block btn-primary">Search</button>
+    </div>
+</form>

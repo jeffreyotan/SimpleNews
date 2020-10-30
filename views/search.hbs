@@ -1,0 +1,22 @@
+<div>
+    {{#if hasArticles}}
+        {{#each newsArticles}}
+            <div>
+                <h5>{{this.title}}</h5>
+                <img src={{this.urlToImage}} alt="article pic" class="localImg">
+                <p>{{this.summary}}</p>
+                <table class="table-borderless localTable">
+                    <tbody>
+                        <tr>
+                            <td>{{this.publishTime}}</td>
+                            <td class="text-right"><a href={{this.articleLink}}>Read</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p></p>
+            </div>
+        {{/each}}
+    {{else}}
+        <h3>No results were found!</h3>
+    {{/if}}
+</div>
